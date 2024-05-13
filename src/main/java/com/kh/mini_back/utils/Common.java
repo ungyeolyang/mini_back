@@ -1,4 +1,4 @@
-package com.kh.mini.utils;
+package com.kh.mini_back.utils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
