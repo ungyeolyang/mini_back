@@ -11,10 +11,12 @@ import java.sql.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberVO {
+public class UserInfoVO {
     private String id;
     private String pw;
+    private Date birth;
     private String nick;
     private String email;
+    private String gender;
     private String introdution;
 }
