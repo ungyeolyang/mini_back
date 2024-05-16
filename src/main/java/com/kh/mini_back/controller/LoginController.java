@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -52,5 +53,12 @@ public class LoginController {
         LoginDAO loginDAO = new LoginDAO();
         Boolean isSignUp = loginDAO.SignUp(userInfoVo);
         return ResponseEntity.ok(isSignUp);
+    }
+
+    @GetMapping("/getinfo")
+    public ResponseEntity<List<UserInfoVO>> getInfo(@RequestParam String id) {
+        LoginDAO loginDAO = new LoginDAO();
+        List<UserInfoVO> list= loginDAO.getInfo(id);
+        return ResponseEntity.ok(list);
     }
 }
