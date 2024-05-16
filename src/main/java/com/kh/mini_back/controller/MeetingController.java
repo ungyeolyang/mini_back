@@ -1,13 +1,33 @@
 package com.kh.mini_back.controller;
 
+import com.kh.mini_back.dao.LoginDAO;
+import com.kh.mini_back.dao.MeetingDAO;
+import com.kh.mini_back.vo.ChatVO;
+import com.kh.mini_back.vo.UserInfoVO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/meeting")
+@RequestMapping("/dooin")
 @Slf4j
 public class MeetingController {
+    @PostMapping("/chat")
+    public ResponseEntity<Boolean> chat(@RequestBody ChatVO chatVO) {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        boolean isLogin = meetingDAO.chat(chatVO);
+        return ResponseEntity.ok(isLogin);
+    }
+
+    @GetMapping("/chatlist")
+    public ResponseEntity<List<ChatVO>> chatList(@RequestParam int meetingNo) {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        List<ChatVO> list = meetingDAO.chatList(meetingNo);
+        return ResponseEntity.ok(list);
+    }
 }
