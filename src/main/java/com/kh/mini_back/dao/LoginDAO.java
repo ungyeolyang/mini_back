@@ -3,14 +3,15 @@ package com.kh.mini_back.dao;
 import com.kh.mini_back.utils.Common;
 import com.kh.mini_back.vo.UserInfoVO;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginDAO {
     Connection conn = null;
     Statement stmt = null;
     ResultSet rs = null;
+    PreparedStatement pstmt = null;
     // 아이디와 비밀번호를 입력받아 일치하면 true 반환
     public boolean logIn(String id,String pw) {
         boolean isLogin = false;
@@ -127,5 +128,36 @@ public class LoginDAO {
         Common.close(conn);
 
        return ret > 0;
+    }
+
+    public List<UserInfoVO> getInfo(String id) {
+        List<UserInfoVO> list = new ArrayList<>();
+        try {
+            conn = Common.getConnection();
+            String query = "SELECT * FROM USER_INFO_TB WHERE USER_ID = ?";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, id);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                UserInfoVO userInfoVO = new UserInfoVO();
+                userInfoVO.setId(id);
+                userInfoVO.setPw(rs.getString("USER_PW"));
+                userInfoVO.setBirth(rs.getDate("USER_BIRTH")); // 공백 제거
+                userInfoVO.setNick(rs.getString("USER_NICK"));
+                userInfoVO.setEmail(rs.getString("USER_EMAIL"));
+                userInfoVO.setGender(rs.getString("USER_GENDER"));
+                userInfoVO.setIntrodution(rs.getString("USER_INTRODUTION"));
+                list.add(userInfoVO);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            Common.close(rs);
+            Common.close(pstmt); // stmt를 pstmt로 변경
+            Common.close(conn);
+        }
+
+        return list;
     }
 }
