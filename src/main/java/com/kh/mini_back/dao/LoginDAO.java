@@ -143,7 +143,7 @@ public class LoginDAO {
                 UserInfoVO userInfoVO = new UserInfoVO();
                 userInfoVO.setId(id);
                 userInfoVO.setPw(rs.getString("USER_PW"));
-                userInfoVO.setBirth(rs.getDate("USER_BIRTH")); // 공백 제거
+                userInfoVO.setBirth(rs.getDate("USER_BIRTH"));
                 userInfoVO.setNick(rs.getString("USER_NICK"));
                 userInfoVO.setEmail(rs.getString("USER_EMAIL"));
                 userInfoVO.setGender(rs.getString("USER_GENDER"));
