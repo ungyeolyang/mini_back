@@ -1,7 +1,7 @@
-package com.kh.mini.dao;
+package com.kh.mini_back.dao;
 
-import com.kh.mini.common.Common;
 import com.kh.mini.vo.NotBoVo;
+import com.kh.mini_back.utils.Common;
 
 import java.sql.*;
 import java.util.ArrayList;

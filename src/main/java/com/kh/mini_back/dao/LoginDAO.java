@@ -109,15 +109,20 @@ public class LoginDAO {
         int ret = 0;
         try {
             conn = Common.getConnection();
-            stmt = conn.createStatement();
+            String query = "INSERT INTO USER_INFO_TB VALUES (?,?,?,?,?,?,?,?)";
 
-            String query = "INSERT INTO USER_INFO_TB VALUES ("
-                    + "'" + userInfoVO.getId() + "'" + ", '" + userInfoVO.getPw() + "', '" +
-                    userInfoVO.getBirth() + "', '" + userInfoVO.getNick() + "', '" +
-                    userInfoVO.getEmail() + "', '" + userInfoVO.getGender() + "', '" +
-                    userInfoVO.getIntrodution()+ "')";
+            pstmt = conn.prepareStatement(query);
 
-            ret = stmt.executeUpdate(query);
+            pstmt.setString(1, userInfoVO.getId());
+            pstmt.setString(2, userInfoVO.getPw());
+            pstmt.setDate(3, userInfoVO.getBirth());
+            pstmt.setString(4, userInfoVO.getNick());
+            pstmt.setString(5, userInfoVO.getEmail());
+            pstmt.setString(6, userInfoVO.getGender());
+            pstmt.setString(7, "안녕하세요 " + userInfoVO.getNick() +"입니다.");
+            pstmt.setString(8, userInfoVO.getProfile());
+
+            ret = pstmt.executeUpdate();
 
         }
         catch(Exception e){
@@ -128,36 +133,5 @@ public class LoginDAO {
         Common.close(conn);
 
        return ret > 0;
-    }
-
-    public List<UserInfoVO> getInfo(String id) {
-        List<UserInfoVO> list = new ArrayList<>();
-        try {
-            conn = Common.getConnection();
-            String query = "SELECT * FROM USER_INFO_TB WHERE USER_ID = ?";
-            pstmt = conn.prepareStatement(query);
-            pstmt.setString(1, id);
-            rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                UserInfoVO userInfoVO = new UserInfoVO();
-                userInfoVO.setId(id);
-                userInfoVO.setPw(rs.getString("USER_PW"));
-                userInfoVO.setBirth(rs.getDate("USER_BIRTH"));
-                userInfoVO.setNick(rs.getString("USER_NICK"));
-                userInfoVO.setEmail(rs.getString("USER_EMAIL"));
-                userInfoVO.setGender(rs.getString("USER_GENDER"));
-                userInfoVO.setIntrodution(rs.getString("USER_INTRODUTION"));
-                list.add(userInfoVO);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            Common.close(rs);
-            Common.close(pstmt); // stmt를 pstmt로 변경
-            Common.close(conn);
-        }
-
-        return list;
     }
 }

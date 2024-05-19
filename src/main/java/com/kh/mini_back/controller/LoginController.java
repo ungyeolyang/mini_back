@@ -1,6 +1,7 @@
 package com.kh.mini_back.controller;
 
 import com.kh.mini_back.dao.LoginDAO;
+import com.kh.mini_back.dao.MyDAO;
 import com.kh.mini_back.vo.UserInfoVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -54,11 +55,11 @@ public class LoginController {
         Boolean isSignUp = loginDAO.SignUp(userInfoVo);
         return ResponseEntity.ok(isSignUp);
     }
-
+    //아이디 받아 정보가져오기
     @GetMapping("/getinfo")
     public ResponseEntity<List<UserInfoVO>> getInfo(@RequestParam String id) {
-        LoginDAO loginDAO = new LoginDAO();
-        List<UserInfoVO> list= loginDAO.getInfo(id);
+        MyDAO myDAO = new MyDAO();
+        List<UserInfoVO> list= myDAO.getInfo(id);
         return ResponseEntity.ok(list);
     }
 }

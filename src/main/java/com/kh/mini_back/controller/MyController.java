@@ -14,10 +14,26 @@ import java.util.List;
 @RequestMapping("/dooin")
 @Slf4j
 public class MyController {
+    //멤버 수정성공하면 true
     @PostMapping("/memberedit")
     public ResponseEntity<Boolean> editInfo(@RequestBody UserInfoVO userInfoVO) {
         MyDAO myDAO = new MyDAO();
-        boolean num = myDAO.editInfo(userInfoVO);
-        return ResponseEntity.ok(num);
+        boolean isMemEdit = myDAO.editInfo(userInfoVO);
+        return ResponseEntity.ok(isMemEdit);
     }
+    //프로필 수정성공하면 true
+    @PostMapping("/profileedit")
+    public ResponseEntity<Boolean> editProfile(@RequestBody UserInfoVO userInfoVO) {
+        MyDAO myDAO = new MyDAO();
+        boolean isProEdit = myDAO.editProfile(userInfoVO);
+        return ResponseEntity.ok(isProEdit);
+    }
+    //접속한 아이디에 맞는 비밀번호이면 true
+    @PostMapping("/conpw")
+    public ResponseEntity<Boolean> findMemberPw(@RequestBody UserInfoVO userInfoVO) {
+        MyDAO myDAO = new MyDAO();
+        Boolean conPw = myDAO.checkPw(userInfoVO);
+        return ResponseEntity.ok(conPw);
+    }
+
 }

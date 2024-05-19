@@ -1,9 +1,8 @@
-package com.kh.mini.controller;
+package com.kh.mini_back.controller;
 
 
-
-import com.kh.mini.dao.NotBoDao;
 import com.kh.mini.vo.NotBoVo;
+import com.kh.mini_back.dao.NotBoDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -19,4 +19,5 @@ public class UserInfoVO {
     private String email;
     private String gender;
     private String introdution;
+    private String profile;
 }
