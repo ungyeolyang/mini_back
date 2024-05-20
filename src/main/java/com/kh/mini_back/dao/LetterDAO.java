@@ -1,6 +1,7 @@
 package com.kh.mini_back.dao;
 
 import com.kh.mini_back.utils.Common;
+import com.kh.mini_back.vo.LetterVO;
 import com.kh.mini_back.vo.UserInfoVO;
 
 import java.sql.*;
@@ -30,6 +31,66 @@ public class LetterDAO {
                 userInfoVO.setId(userId);
                 userInfoVO.setNick(nick);
                 list.add(userInfoVO);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            Common.close(rs);
+            Common.close(pstmt);
+            Common.close(conn);
+        }
+        return list;
+    }
+    public Boolean send(LetterVO letterVO) {
+        int ret = 0;
+        try {
+            conn = Common.getConnection();
+            String query = "INSERT INTO LETTER_TB VALUES (LETTER_SEQ.NEXTVAL,?,?,?,?,SYSDATE,'FALSE')";
+
+            pstmt = conn.prepareStatement(query);
+
+            pstmt.setString(1, letterVO.getSender());
+            pstmt.setString(2, letterVO.getReceiver());
+            pstmt.setString(3, letterVO.getTitle());
+            pstmt.setString(4, letterVO.getContents());
+
+            ret = pstmt.executeUpdate();
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        Common.close(stmt);
+        Common.close(conn);
+        return ret > 0;
+    }
+
+    public List<LetterVO> getLetter(String id, String category) {
+        List<LetterVO> list = new ArrayList<>();
+        String query = null;
+        try {
+            conn = Common.getConnection();
+            if(category.equals("send")) {
+                query = "SELECT * FROM LETTER_TB WHERE LETTER_SENDER = ?";
+            }
+            else  {query = "SELECT * FROM LETTER_TB WHERE LETTER_RECEIVER = ?";}
+
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, id);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int letterNo = rs.getInt("LETTER_NO");
+                String sender = rs.getString("LETTER_SENDER");
+                String receiver = rs.getString("LETTER_RECEIVER");
+                String title = rs.getString("LETTER_TITLE");
+                String contents = rs.getString("LETTER_CONTENTS");
+                Date date = rs.getDate("LETTER_DATE");
+                String view = rs.getString("LETTER_VIEW");
+                LetterVO letterVO = new LetterVO(letterNo,sender,receiver,title,contents,date,view);
+                list.add(letterVO);
             }
         } catch (Exception e) {
             e.printStackTrace();
