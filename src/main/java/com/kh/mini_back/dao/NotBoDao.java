@@ -1,7 +1,7 @@
-package com.kh.mini_back.dao;
+package com.kh.mini.dao;
 
+import com.kh.mini.common.Common;
 import com.kh.mini.vo.NotBoVo;
-import com.kh.mini_back.utils.Common;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -104,5 +104,51 @@ public class NotBoDao {
         }
         return list;
     }
+
+
+    public List<NotBoVo> sersel(String searchType, String keyword) {
+        List<NotBoVo> list = new ArrayList<>();
+        String sql = null;
+        PreparedStatement pStmt = null;
+        ResultSet rs = null;
+        Connection conn = null;
+
+        try {
+            conn = Common.getConnection();
+            if (searchType.equals("제목")) {
+                sql = "SELECT BOARD_NO, BOARD_TITLE, USER_ID, TO_CHAR(BOARD_DATE, 'YYYY-MM-DD') AS board_date, BOARD_VIEW FROM BOARD_TB WHERE BOARD_TITLE LIKE ?";
+            } else if (searchType.equals("작성자")) {
+                sql = "SELECT BOARD_NO, BOARD_TITLE, USER_ID, TO_CHAR(BOARD_DATE, 'YYYY-MM-DD') AS board_date, BOARD_VIEW FROM BOARD_TB WHERE USER_ID = ?";
+            }
+            pStmt = conn.prepareStatement(sql);
+            if (searchType.equals("제목")) {
+                pStmt.setString(1, "%" + keyword + "%");
+            } else if (searchType.equals("작성자")) {
+                pStmt.setString(1, keyword);
+            }
+            rs = pStmt.executeQuery();
+            while (rs.next()) {
+                NotBoVo notBoVo = new NotBoVo();
+                notBoVo.setBoard_no(rs.getInt("BOARD_NO"));
+                notBoVo.setBoard_title(rs.getString("BOARD_TITLE"));
+                notBoVo.setUser_id(rs.getString("USER_ID"));
+                notBoVo.setBoard_date(rs.getDate("BOARD_DATE"));
+                notBoVo.setBoard_view(rs.getInt("BOARD_VIEW"));
+                list.add(notBoVo);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pStmt != null) pStmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return list;
+    }
+
 
 }

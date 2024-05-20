@@ -1,8 +1,9 @@
-package com.kh.mini_back.controller;
+package com.kh.mini.controller;
 
 
+
+import com.kh.mini.dao.NotBoDao;
 import com.kh.mini.vo.NotBoVo;
-import com.kh.mini_back.dao.NotBoDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,14 @@ public class NotBoController {
         log.debug("유저 id로 조회 : " + user_id);
         NotBoDao dao=new NotBoDao();
         List<NotBoVo> list =dao.myboardSel(user_id);
+        return ResponseEntity.ok(list);
+    }
+    @GetMapping("/sersel")
+    public ResponseEntity<List<NotBoVo>> serSel(@RequestParam String searchType, @RequestParam String keyword) {
+        NotBoDao dao = new NotBoDao();
+        List<NotBoVo> list = dao.sersel(searchType, keyword);
+        System.out.println(searchType);
+        System.out.println(keyword);
         return ResponseEntity.ok(list);
     }
 }
