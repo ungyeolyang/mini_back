@@ -29,7 +29,6 @@ public class MyDAO {
             pstmt.setString(7, userInfoVO.getIntrodution());
             pstmt.setString(8, userInfoVO.getId());
             ret = pstmt.executeUpdate();
-            System.out.println(ret);
 
         } catch (Exception e) {
             e.printStackTrace();

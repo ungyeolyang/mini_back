@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Date;
+import java.sql.Timestamp;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,9 +15,11 @@ import java.sql.Date;
 public class LetterVO {
     private int no;
     private String sender;
+    private String senderNick;
     private String receiver;
+    private String receiverNick;
     private String title;
     private String contents;
-    private Date date;
+    private Timestamp date;
     private String view;
 }

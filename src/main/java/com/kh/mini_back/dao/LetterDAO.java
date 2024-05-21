@@ -14,6 +14,27 @@ public class LetterDAO {
     ResultSet rs = null;
     PreparedStatement pstmt = null;
 
+    //아이디를 입력받아 닉네임 반환
+    public String getNick(String id) {
+        String nick = null;
+        try {
+            conn = Common.getConnection();
+            stmt = conn.createStatement();
+
+            String query = "SELECT USER_NICK FROM USER_INFO_TB WHERE USER_ID = '" + id + "'";
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+             nick = rs.getString("USER_NICK");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(rs);
+        Common.close(stmt);
+        Common.close(conn);
+        return nick;
+    }
     //아이디를 받아 정보출력
     public List<UserInfoVO> getId(String id) {
         List<UserInfoVO> list = new ArrayList<>();
@@ -46,14 +67,16 @@ public class LetterDAO {
         int ret = 0;
         try {
             conn = Common.getConnection();
-            String query = "INSERT INTO LETTER_TB VALUES (LETTER_SEQ.NEXTVAL,?,?,?,?,SYSDATE,'FALSE')";
+            String query = "INSERT INTO LETTER_TB VALUES (LETTER_SEQ.NEXTVAL,?,?,?,?,?,?,SYSDATE,'FALSE')";
 
             pstmt = conn.prepareStatement(query);
 
             pstmt.setString(1, letterVO.getSender());
-            pstmt.setString(2, letterVO.getReceiver());
-            pstmt.setString(3, letterVO.getTitle());
-            pstmt.setString(4, letterVO.getContents());
+            pstmt.setString(2, letterVO.getSenderNick());
+            pstmt.setString(3, letterVO.getReceiver());
+            pstmt.setString(4, letterVO.getReceiverNick());
+            pstmt.setString(5, letterVO.getTitle());
+            pstmt.setString(6, letterVO.getContents());
 
             ret = pstmt.executeUpdate();
 
@@ -84,12 +107,14 @@ public class LetterDAO {
             while (rs.next()) {
                 int letterNo = rs.getInt("LETTER_NO");
                 String sender = rs.getString("LETTER_SENDER");
+                String senderNick = rs.getString("LETTER_SENDERNICK");
                 String receiver = rs.getString("LETTER_RECEIVER");
+                String receiverNCIK = rs.getString("LETTER_RECEIVERNICK");
                 String title = rs.getString("LETTER_TITLE");
                 String contents = rs.getString("LETTER_CONTENTS");
-                Date date = rs.getDate("LETTER_DATE");
+                Timestamp date = rs.getTimestamp("LETTER_DATE");
                 String view = rs.getString("LETTER_VIEW");
-                LetterVO letterVO = new LetterVO(letterNo,sender,receiver,title,contents,date,view);
+                LetterVO letterVO = new LetterVO(letterNo,sender,senderNick,receiver,receiverNCIK,title,contents,date,view);
                 list.add(letterVO);
             }
         } catch (Exception e) {
@@ -101,5 +126,24 @@ public class LetterDAO {
             Common.close(conn);
         }
         return list;
+    }
+    public Boolean setView(String no) {
+        int ret = 0;
+        try {
+            conn = Common.getConnection();
+            String query = "UPDATE LETTER_TB SET LETTER_VIEW = 'TRUE' WHERE LETTER_NO = ?";
+
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, no);
+            ret = pstmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            Common.close(pstmt);
+            Common.close(conn);
+        }
+        return ret>0;
     }
 }

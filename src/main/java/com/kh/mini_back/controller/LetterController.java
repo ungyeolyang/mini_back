@@ -15,6 +15,13 @@ import java.util.Map;
 @RequestMapping("/dooin")
 @Slf4j
 public class LetterController {
+    //아이디를 입력받아 닉네임가져오기
+    @GetMapping("/getnick")
+    public ResponseEntity<String> getNick(@RequestParam String id) {
+        LetterDAO letterDAO = new LetterDAO();
+        String  nick = letterDAO.getNick(id);
+        return ResponseEntity.ok(nick);
+    }
     //아이디 검색
     @GetMapping("/searchid")
     public ResponseEntity<List<UserInfoVO>> searchId(@RequestParam String id) {
@@ -28,7 +35,6 @@ public class LetterController {
         Boolean isSend = letterDAO.send(letterVo);
         return ResponseEntity.ok(isSend);
     }
-
     @PostMapping("/letterList")
     public ResponseEntity<List<LetterVO>> getLetterList(@RequestBody Map<String,String> data) {
         LetterDAO letterDAO = new LetterDAO();
@@ -37,5 +43,13 @@ public class LetterController {
         List<LetterVO> list = letterDAO.getLetter(id,category);
         return ResponseEntity.ok(list);
     }
+    //읽으면 수신으로 변경
+    @GetMapping("/setview")
+    public ResponseEntity<Boolean> setView(@RequestParam String no) {
+        LetterDAO letterDAO = new LetterDAO();
+        Boolean isView = letterDAO.setView(no);
+        return ResponseEntity.ok(isView);
+    }
+
 
 }
