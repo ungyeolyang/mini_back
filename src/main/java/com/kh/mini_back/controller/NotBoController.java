@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/dooin")
@@ -22,6 +24,7 @@ public class NotBoController {
         System.out.println(vo.getBoard_title());
         System.out.println(vo.getBoard_category());
         System.out.println(vo.getBoard_de());
+        System.out.println(vo.getImageurl());
         boolean isTrue = dao.notboinsert(vo);
         return ResponseEntity.ok(isTrue);
     }
@@ -46,6 +49,21 @@ public class NotBoController {
         System.out.println(searchType);
         System.out.println(keyword);
         return ResponseEntity.ok(list);
+    }
+    @GetMapping("/detail")
+    public ResponseEntity<List<NotBoVo>> detail(@RequestParam String board_no){
+        log.debug("번호로 조회 : " + board_no);
+        NotBoDao dao = new NotBoDao();
+        List<NotBoVo> list = dao.detail(board_no);
+        return ResponseEntity.ok(list);
+    }
+    @DeleteMapping("/delete")
+    public ResponseEntity<Boolean> detaildel(@RequestBody Map<String, Integer> data) {
+        int getboard_no = data.get("board_no");
+        System.out.println("Received board_no: " + getboard_no); // 디버깅용 로그
+        NotBoDao dao = new NotBoDao();
+        boolean isTrue = dao.detailDelete(getboard_no);
+        return ResponseEntity.ok(isTrue);
     }
 }
 

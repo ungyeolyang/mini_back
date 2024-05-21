@@ -15,9 +15,9 @@ public class NotBoDao {
     private PreparedStatement pStmt = null;
 
     // 게시판에 글쓰기
-    public boolean notboinsert(NotBoVo vo){
+    public boolean notboinsert(NotBoVo vo) {
         int result = 0;
-        String query = "INSERT INTO BOARD_TB (BOARD_NO, BOARD_TITLE, BOARD_CATEGORY, BOARD_DE, USER_ID, BOARD_DATE, BOARD_VIEW) VALUES (BOARD_SEQ.NEXTVAL, ?, ?, ?, ?, SYSDATE, 0)";
+        String query = "INSERT INTO BOARD_TB (BOARD_NO, BOARD_TITLE, BOARD_CATEGORY, BOARD_DE, USER_ID, BOARD_DATE, BOARD_VIEW, IMAGEURL) VALUES (BOARD_SEQ.NEXTVAL, ?, ?, ?, ?, SYSDATE, 0,?)";
         try {
             conn = Common.getConnection();
             pStmt = conn.prepareStatement(query);
@@ -25,6 +25,7 @@ public class NotBoDao {
             pStmt.setString(2, vo.getBoard_category());
             pStmt.setString(3, vo.getBoard_de());
             pStmt.setString(4, "kimfjd");
+            pStmt.setString(5,vo.getImageurl());
             result = pStmt.executeUpdate();
             System.out.println("글이 올라갔습니다. : " + result);
 
@@ -34,9 +35,10 @@ public class NotBoDao {
         Common.close(pStmt);
         Common.close(conn);
 
-        if(result == 1) return true;
+        if (result == 1) return true;
         else return false;
     }
+
     public List<NotBoVo> boardSel(String getboard_category) {
         List<NotBoVo> list = new ArrayList<>();
         String sql = null;
@@ -47,7 +49,7 @@ public class NotBoDao {
             sql = "SELECT BOARD_NO, BOARD_TITLE, USER_ID, TO_CHAR(BOARD_DATE, 'YYYY-MM-DD') AS board_date, BOARD_VIEW FROM BOARD_TB WHERE BOARD_CATEGORY = " + "'" + getboard_category + "'";
             rs = stmt.executeQuery(sql);
 
-            while(rs.next()) {
+            while (rs.next()) {
                 int board_no = rs.getInt("BOARD_NO");
                 String board_title = rs.getString("BOARD_TITLE");
                 String user_id = rs.getString("USER_ID");
@@ -81,7 +83,7 @@ public class NotBoDao {
             sql = "SELECT BOARD_NO, BOARD_TITLE, USER_ID, TO_CHAR(BOARD_DATE, 'YYYY-MM-DD') AS board_date, BOARD_VIEW FROM BOARD_TB WHERE USER_ID = " + "'" + getuser_id + "'";
             rs = stmt.executeQuery(sql);
 
-            while(rs.next()) {
+            while (rs.next()) {
                 int board_no = rs.getInt("BOARD_NO");
                 String board_title = rs.getString("BOARD_TITLE");
                 String user_id = rs.getString("USER_ID");
@@ -150,5 +152,60 @@ public class NotBoDao {
         return list;
     }
 
+    public List<NotBoVo> detail(String getboard_no) {
+        List<NotBoVo> list = new ArrayList<>();
+        String sql = null;
+        System.out.println("board_no : " + getboard_no);
+        try {
+            conn = Common.getConnection();
+            stmt = conn.createStatement();
+            sql = "SELECT BOARD_NO, BOARD_TITLE, USER_ID, TO_CHAR(BOARD_DATE, 'YYYY-MM-DD') AS BOARD_DATE, BOARD_VIEW, BOARD_DE, IMAGEURL FROM BOARD_TB WHERE BOARD_NO = '" + getboard_no + "'";
+            rs = stmt.executeQuery(sql);
 
+            while (rs.next()) {
+                int board_no = rs.getInt("BOARD_NO");
+                String board_title = rs.getString("BOARD_TITLE");
+                String user_id = rs.getString("USER_ID");
+                String board_date = rs.getString("BOARD_DATE");
+                int board_view = rs.getInt("BOARD_VIEW");
+                String board_de = rs.getString("BOARD_DE");
+                String imageurl= rs.getString("IMAGEURL");
+
+                NotBoVo vo = new NotBoVo();
+                vo.setBoard_no(board_no);
+                vo.setBoard_title(board_title);
+                vo.setUser_id(user_id);
+                vo.setBoard_date(Date.valueOf(board_date));
+                vo.setBoard_view(board_view);
+                vo.setBoard_de(board_de);
+                vo.setImageurl(imageurl);
+                list.add(vo);
+            }
+            Common.close(rs);
+            Common.close(stmt);
+            Common.close(conn);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        return list;
+
+    }
+
+    public boolean detailDelete(int board_no){
+        int result = 0;
+        String sql = "DELETE FROM BOARD_TB WHERE BOARD_NO = ?";
+        try {
+            conn = Common.getConnection();
+            pStmt = conn.prepareStatement(sql);
+            pStmt.setInt(1, board_no);
+            result = pStmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pStmt);
+        Common.close(conn);
+        if(result == 1) return true;
+        else return false;
+    }
 }

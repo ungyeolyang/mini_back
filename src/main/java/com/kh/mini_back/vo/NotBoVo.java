@@ -15,4 +15,5 @@ public class NotBoVo {
     private String user_id;
     private Date board_date;
     private int board_view;
+    private String imageurl;
 }
