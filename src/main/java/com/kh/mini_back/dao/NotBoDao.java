@@ -1,8 +1,7 @@
-package com.kh.mini_back.dao;
+package com.kh.mini.dao;
 
-
+import com.kh.mini.common.Common;
 import com.kh.mini.vo.NotBoVo;
-import com.kh.mini_back.utils.Common;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class NotBoDao {
             pStmt.setString(1, vo.getBoard_title());
             pStmt.setString(2, vo.getBoard_category());
             pStmt.setString(3, vo.getBoard_de());
-            pStmt.setString(4, "kimfjd");
+            pStmt.setString(4, vo.getUser_id());
             pStmt.setString(5,vo.getImageurl());
             result = pStmt.executeUpdate();
             System.out.println("글이 올라갔습니다. : " + result);
@@ -207,6 +206,46 @@ public class NotBoDao {
         Common.close(pStmt);
         Common.close(conn);
         if(result == 1) return true;
+        else return false;
+    }
+    public boolean notboUpdate(NotBoVo vo) {
+        int result = 0;
+        String query = "UPDATE BOARD_TB SET BOARD_TITLE=?,BOARD_DE=?,BOARD_DATE=SYSDATE,IMAGEURL=? WHERE BOARD_NO=?";
+        try {
+            conn = Common.getConnection();
+            pStmt = conn.prepareStatement(query);
+            pStmt.setString(1, vo.getBoard_title());
+            pStmt.setString(2, vo.getBoard_de());
+            pStmt.setString(3, vo.getImageurl());
+            pStmt.setInt(4, vo.getBoard_no());
+            result = pStmt.executeUpdate();
+            System.out.println("글이 수정되었습니다.. : " + result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pStmt);
+        Common.close(conn);
+
+        if (result == 1) return true;
+        else return false;
+    }
+    public boolean upView(NotBoVo vo){
+        int result = 0;
+        String query = "UPDATE BOARD_TB SET BOARD_VIEW= BOARD_VIEW +1 WHERE BOARD_NO=?";
+        try{
+            conn = Common.getConnection();
+            pStmt = conn.prepareStatement(query);
+            System.out.println(vo.getBoard_no());
+            pStmt.setInt(1, vo.getBoard_no());
+            result = pStmt.executeUpdate();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pStmt);
+        Common.close(conn);
+
+        if (result == 1) return true;
         else return false;
     }
 }

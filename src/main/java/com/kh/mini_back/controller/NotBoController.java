@@ -1,10 +1,9 @@
-package com.kh.mini_back.controller;
+package com.kh.mini.controller;
 
 
 
-
+import com.kh.mini.dao.NotBoDao;
 import com.kh.mini.vo.NotBoVo;
-import com.kh.mini_back.dao.NotBoDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +24,7 @@ public class NotBoController {
         System.out.println(vo.getBoard_title());
         System.out.println(vo.getBoard_category());
         System.out.println(vo.getBoard_de());
+        System.out.println(vo.getUser_id());
         System.out.println(vo.getImageurl());
         boolean isTrue = dao.notboinsert(vo);
         return ResponseEntity.ok(isTrue);
@@ -58,12 +58,28 @@ public class NotBoController {
         List<NotBoVo> list = dao.detail(board_no);
         return ResponseEntity.ok(list);
     }
-    @DeleteMapping("/delete")
-    public ResponseEntity<Boolean> detaildel(@RequestBody Map<String, Integer> data) {
-        int getboard_no = data.get("board_no");
-        System.out.println("Received board_no: " + getboard_no); // 디버깅용 로그
+    @DeleteMapping("/delete/{board_no}")
+    public ResponseEntity<Boolean> detaildel(@PathVariable int board_no) {
+        System.out.println("aaa: " + board_no); // 디버깅용 로그
         NotBoDao dao = new NotBoDao();
-        boolean isTrue = dao.detailDelete(getboard_no);
+        boolean isTrue = dao.detailDelete(board_no);
+        return ResponseEntity.ok(isTrue);
+    }
+    @PostMapping("/notboupdate")
+    public ResponseEntity<Boolean> NotBoUpdate(@RequestBody NotBoVo vo){
+        NotBoDao dao=new NotBoDao();
+        System.out.println("제목"+vo.getBoard_title());
+        System.out.println("내용"+vo.getBoard_de());
+        System.out.println("이미지"+vo.getImageurl());
+        System.out.println("번호"+vo.getBoard_no());
+        boolean isTrue = dao.notboUpdate(vo);
+        return ResponseEntity.ok(isTrue);
+    }
+    @PostMapping("/upView")
+    public ResponseEntity<Boolean> upView(@RequestBody NotBoVo vo){
+        NotBoDao dao=new NotBoDao();
+        System.out.println("번호"+vo.getBoard_no());
+        boolean isTrue = dao.upView(vo);
         return ResponseEntity.ok(isTrue);
     }
 }

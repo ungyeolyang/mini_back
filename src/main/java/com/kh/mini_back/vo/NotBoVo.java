@@ -1,4 +1,4 @@
-package com.kh.mini_back.vo;
+package com.kh.mini.vo;
 
 import lombok.Getter;
 import lombok.Setter;
