@@ -1,8 +1,9 @@
 package com.kh.mini_back.dao;
 
 
-import com.kh.mini_back.utils.Common;
-import com.kh.mini_back.vo.NotBoVo;
+import com.kh.mini.common.Common;
+import com.kh.mini.vo.CommentVo;
+import com.kh.mini.vo.NotBoVo;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class NotBoDao {
         else return false;
     }
 
+    // 카테고리별 조회
     public List<NotBoVo> boardSel(String getboard_category) {
         List<NotBoVo> list = new ArrayList<>();
         String sql = null;
@@ -74,6 +76,7 @@ public class NotBoDao {
         return list;
     }
 
+    // 내가 쓴글 조회
     public List<NotBoVo> myboardSel(String getuser_id) {
         List<NotBoVo> list = new ArrayList<>();
         String sql = null;
@@ -108,7 +111,7 @@ public class NotBoDao {
         return list;
     }
 
-
+    // 게시판 검색
     public List<NotBoVo> sersel(String searchType, String keyword) {
         List<NotBoVo> list = new ArrayList<>();
         String sql = null;
@@ -153,6 +156,7 @@ public class NotBoDao {
         return list;
     }
 
+    // 상세페이지
     public List<NotBoVo> detail(String getboard_no) {
         List<NotBoVo> list = new ArrayList<>();
         String sql = null;
@@ -193,6 +197,7 @@ public class NotBoDao {
 
     }
 
+    // 게시글 삭제
     public boolean detailDelete(int board_no){
         int result = 0;
         String sql = "DELETE FROM BOARD_TB WHERE BOARD_NO = ?";
@@ -209,6 +214,8 @@ public class NotBoDao {
         if(result == 1) return true;
         else return false;
     }
+
+    // 게시글 수정
     public boolean notboUpdate(NotBoVo vo) {
         int result = 0;
         String query = "UPDATE BOARD_TB SET BOARD_TITLE=?,BOARD_DE=?,BOARD_DATE=SYSDATE,IMAGEURL=? WHERE BOARD_NO=?";
@@ -247,6 +254,76 @@ public class NotBoDao {
         Common.close(conn);
 
         if (result == 1) return true;
+        else return false;
+    }
+    public boolean commentInsert(CommentVo vo) {
+        int result = 0;
+        String query = "INSERT INTO COMMENTLIST_TB(COMMENT_NO,COMMENT_DETAIL,BOARD_NO,COMMENT_ID,COMMENT_DATE) VALUES(COMMENT_SEQ.NEXTVAL, ?,?,?,SYSDATE)";
+        try {
+            conn = Common.getConnection();
+            pStmt = conn.prepareStatement(query);
+            pStmt.setString(1,vo.getComment_detail());
+            pStmt.setInt(2,vo.getBoard_no());
+            pStmt.setString(3,vo.getComment_id());
+            result = pStmt.executeUpdate();
+            System.out.println("댓글이 올라갔습니다. : " + result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pStmt);
+        Common.close(conn);
+
+        if (result == 1) return true;
+        else return false;
+    }
+    public List<CommentVo> commentSel(String getboard_no) {
+        List<CommentVo> list = new ArrayList<>();
+        String sql = null;
+        System.out.println("board_category : " + getboard_no);
+        try {
+            conn = Common.getConnection();
+            stmt = conn.createStatement();
+            sql = "SELECT COMMENT_NO, COMMENT_DETAIL, COMMENT_ID,TO_CHAR(COMMENT_DATE, 'YYYY-MM-DD')AS COMMENT_DATE FROM COMMENTLIST_TB WHERE BOARD_NO="+getboard_no;
+            rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                int comment_no =rs.getInt("COMMENT_NO");
+                String comment_detail = rs.getString("COMMENT_DETAIL");
+                String comment_id=rs.getString("COMMENT_ID");
+                String comment_date=rs.getString("COMMENT_DATE");
+
+
+                CommentVo vo = new CommentVo();
+                vo.setComment_no(comment_no);
+                vo.setComment_detail(comment_detail);
+                vo.setComment_id(comment_id);
+                vo.setComment_date(Date.valueOf(comment_date));
+                list.add(vo);
+            }
+            Common.close(rs);
+            Common.close(stmt);
+            Common.close(conn);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    // 댓글 삭제
+    public boolean commentDelete(int comment_no){
+        int result = 0;
+        String sql = "DELETE FROM COMMENTLIST_TB WHERE COMMENT_NO = ?";
+        try {
+            conn = Common.getConnection();
+            pStmt = conn.prepareStatement(sql);
+            pStmt.setInt(1, comment_no);
+            result = pStmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(pStmt);
+        Common.close(conn);
+        if(result == 1) return true;
         else return false;
     }
 }

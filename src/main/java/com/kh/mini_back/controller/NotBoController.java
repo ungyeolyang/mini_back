@@ -1,7 +1,10 @@
 package com.kh.mini_back.controller;
 
-import com.kh.mini_back.dao.NotBoDao;
-import com.kh.mini_back.vo.NotBoVo;
+
+
+import com.kh.mini.dao.NotBoDao;
+import com.kh.mini.vo.CommentVo;
+import com.kh.mini.vo.NotBoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -78,6 +81,29 @@ public class NotBoController {
         NotBoDao dao=new NotBoDao();
         System.out.println("번호"+vo.getBoard_no());
         boolean isTrue = dao.upView(vo);
+        return ResponseEntity.ok(isTrue);
+    }
+    @PostMapping("/commentInsert")
+    public ResponseEntity<Boolean> commentInsert(@RequestBody CommentVo vo){
+        NotBoDao dao=new NotBoDao();
+        System.out.println(vo.getComment_detail());
+        System.out.println(vo.getBoard_no());
+        System.out.println(vo.getComment_id());
+        boolean isTrue = dao.commentInsert(vo);
+        return ResponseEntity.ok(isTrue);
+    }
+    @GetMapping("/commentSel")
+    public ResponseEntity<List<CommentVo>> commentSel(@RequestParam String board_no){
+        log.debug("댓글을 조회 : " + board_no);
+        NotBoDao dao=new NotBoDao();
+        List<CommentVo> list =dao.commentSel(board_no);
+        return ResponseEntity.ok(list);
+    }
+    @DeleteMapping("/commentdel/{comment_no}")
+    public ResponseEntity<Boolean> commentdel(@PathVariable String comment_no) {
+        System.out.println("삭제번호: " + comment_no); // 디버깅용 로그
+        NotBoDao dao = new NotBoDao();
+        boolean isTrue = dao.commentDelete(Integer.parseInt(comment_no));
         return ResponseEntity.ok(isTrue);
     }
 }
