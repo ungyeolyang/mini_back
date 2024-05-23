@@ -146,4 +146,24 @@ public class LetterDAO {
         }
         return ret>0;
     }
+
+    public Boolean deleteLetter(String no) {
+        int ret = 0;
+        try {
+            conn = Common.getConnection();
+            String query = "UPDATE LETTER_TB SET LETTER_VIEW = 'TRUE' WHERE LETTER_NO = ?";
+
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, no);
+            ret = pstmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            Common.close(pstmt);
+            Common.close(conn);
+        }
+        return ret>0;
+    }
 }
