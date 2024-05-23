@@ -7,7 +7,7 @@ import java.sql.Date;
 
 @Getter
 @Setter
-public class CommentVo {
+public class CommentVO {
     private int comment_no;
     private String comment_detail;
     private int board_no;

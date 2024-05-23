@@ -1,9 +1,8 @@
 package com.kh.mini_back.dao;
 
-
-import com.kh.mini.common.Common;
-import com.kh.mini.vo.CommentVo;
-import com.kh.mini.vo.NotBoVo;
+import com.kh.mini_back.utils.Common;
+import com.kh.mini_back.vo.CommentVO;
+import com.kh.mini_back.vo.NotBoVo;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -256,7 +255,7 @@ public class NotBoDao {
         if (result == 1) return true;
         else return false;
     }
-    public boolean commentInsert(CommentVo vo) {
+    public boolean commentInsert(CommentVO vo) {
         int result = 0;
         String query = "INSERT INTO COMMENTLIST_TB(COMMENT_NO,COMMENT_DETAIL,BOARD_NO,COMMENT_ID,COMMENT_DATE) VALUES(COMMENT_SEQ.NEXTVAL, ?,?,?,SYSDATE)";
         try {
@@ -277,8 +276,8 @@ public class NotBoDao {
         if (result == 1) return true;
         else return false;
     }
-    public List<CommentVo> commentSel(String getboard_no) {
-        List<CommentVo> list = new ArrayList<>();
+    public List<CommentVO> commentSel(String getboard_no) {
+        List<CommentVO> list = new ArrayList<>();
         String sql = null;
         System.out.println("board_category : " + getboard_no);
         try {
@@ -294,7 +293,7 @@ public class NotBoDao {
                 String comment_date=rs.getString("COMMENT_DATE");
 
 
-                CommentVo vo = new CommentVo();
+                CommentVO vo = new CommentVO();
                 vo.setComment_no(comment_no);
                 vo.setComment_detail(comment_detail);
                 vo.setComment_id(comment_id);

@@ -1,16 +1,13 @@
 package com.kh.mini_back.controller;
 
-
-
-import com.kh.mini.dao.NotBoDao;
-import com.kh.mini.vo.CommentVo;
-import com.kh.mini.vo.NotBoVo;
+import com.kh.mini_back.dao.NotBoDao;
+import com.kh.mini_back.vo.CommentVO;
+import com.kh.mini_back.vo.NotBoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -84,7 +81,7 @@ public class NotBoController {
         return ResponseEntity.ok(isTrue);
     }
     @PostMapping("/commentInsert")
-    public ResponseEntity<Boolean> commentInsert(@RequestBody CommentVo vo){
+    public ResponseEntity<Boolean> commentInsert(@RequestBody CommentVO vo){
         NotBoDao dao=new NotBoDao();
         System.out.println(vo.getComment_detail());
         System.out.println(vo.getBoard_no());
@@ -93,10 +90,10 @@ public class NotBoController {
         return ResponseEntity.ok(isTrue);
     }
     @GetMapping("/commentSel")
-    public ResponseEntity<List<CommentVo>> commentSel(@RequestParam String board_no){
+    public ResponseEntity<List<CommentVO>> commentSel(@RequestParam String board_no){
         log.debug("댓글을 조회 : " + board_no);
         NotBoDao dao=new NotBoDao();
-        List<CommentVo> list =dao.commentSel(board_no);
+        List<CommentVO> list =dao.commentSel(board_no);
         return ResponseEntity.ok(list);
     }
     @DeleteMapping("/commentdel/{comment_no}")
