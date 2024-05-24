@@ -1,18 +1,14 @@
 package com.kh.mini_back.controller;
 
-import com.kh.mini_back.dao.FriendDAO;
-import com.kh.mini_back.dao.LoginDAO;
 import com.kh.mini_back.dao.MeetingDAO;
 import com.kh.mini_back.vo.ChatVO;
-import com.kh.mini_back.vo.FriendVO;
-import com.kh.mini_back.vo.UserInfoVO;
+import com.kh.mini_back.vo.MeetingMemberVO;
+import com.kh.mini_back.vo.ScheduleVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -35,10 +31,20 @@ public class MeetingController {
     }
 
     //모임 참여자 list
-    @GetMapping("/moimlist")
-    public ResponseEntity<List<FriendVO>> sendList(@RequestParam int meetingNo) {
+    @GetMapping("/memberlist")
+    public ResponseEntity<List<MeetingMemberVO>> memberList(@RequestParam int meetingNo) {
         MeetingDAO meetingDAO = new MeetingDAO();
-        List<meetingVO> list = meetingDAO.chatList(meetingNo);
+        List<MeetingMemberVO> list = meetingDAO.memberList(meetingNo);
         return ResponseEntity.ok(list);
     }
+
+    //스케쥴 list
+    @GetMapping("/schedulelist")
+    public ResponseEntity<List<ScheduleVO>> scheduleList(@RequestParam int meetingNo) {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        List<ScheduleVO> list = meetingDAO.scheduleList(meetingNo);
+        return ResponseEntity.ok(list);
+    }
+
+
 }

@@ -2,8 +2,6 @@ package com.kh.mini_back.dao;
 
 import com.kh.mini_back.utils.Common;
 import com.kh.mini_back.vo.FriendVO;
-import com.kh.mini_back.vo.LetterVO;
-import com.kh.mini_back.vo.UserInfoVO;
 
 import java.sql.*;
 import java.util.*;
