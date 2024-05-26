@@ -12,13 +12,19 @@ import java.sql.Timestamp;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ScheduleVO {
-    int mno;
-    int sno;
-    String title;
-    String contents;
-    String id;
-    String nick;
-    Timestamp bdate;
-    Timestamp sdate;
+public class ScheduleVO implements Comparable<ScheduleVO>{
+    private int mno;
+    private int sno;
+    private String title;
+    private String contents;
+    private String id;
+    private String nick;
+    private Timestamp bdate;
+    private Date sdate;
+
+    @Override
+    public int compareTo(ScheduleVO o) {
+        if(this.id.equals(o.id) && this.sdate.equals(o.sdate)) return 0;
+        else return 1;
+    }
 }

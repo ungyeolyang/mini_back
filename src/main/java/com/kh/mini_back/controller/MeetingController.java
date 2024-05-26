@@ -3,18 +3,36 @@ package com.kh.mini_back.controller;
 import com.kh.mini_back.dao.MeetingDAO;
 import com.kh.mini_back.vo.ChatVO;
 import com.kh.mini_back.vo.MeetingMemberVO;
+import com.kh.mini_back.vo.MeetingVO;
 import com.kh.mini_back.vo.ScheduleVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.IntBuffer;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/dooin")
 @Slf4j
 public class MeetingController {
+    //모집하기
+    @PostMapping("/recruit")
+    public ResponseEntity<Boolean> recruit(@RequestBody MeetingVO meetingVO) {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        boolean isRecruit = meetingDAO.recruit(meetingVO);
+        return ResponseEntity.ok(isRecruit);
+    }
+    //채팅 리스트
+    @GetMapping("/meetinglist")
+    public ResponseEntity<List<MeetingVO>> meetingList() {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        List<MeetingVO> list = meetingDAO.meetingList();
+        return ResponseEntity.ok(list);
+    }
     //채팅 쓰기
     @PostMapping("/chat")
     public ResponseEntity<Boolean> chat(@RequestBody ChatVO chatVO) {
@@ -45,6 +63,14 @@ public class MeetingController {
         List<ScheduleVO> list = meetingDAO.scheduleList(meetingNo);
         return ResponseEntity.ok(list);
     }
+    @PostMapping("/writerlist")
+    public ResponseEntity<Set<ScheduleVO>> writerList(@RequestBody Map<String,String> data) {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        int mno = Integer.parseInt(data.get("mno"));
+        int year = Integer.parseInt(data.get("year"));
+        int month = Integer.parseInt(data.get("month"));
 
-
+        Set <ScheduleVO> set = meetingDAO.writerList(mno, year, month);
+        return ResponseEntity.ok(set);
+    }
 }
