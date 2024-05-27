@@ -1,7 +1,15 @@
 package com.kh.mini_back.dao;
 
+
+
+
+
+
 import com.kh.mini_back.utils.Common;
-import com.kh.mini_back.vo.*;
+import com.kh.mini_back.vo.ChatVO;
+import com.kh.mini_back.vo.MeetingMemberVO;
+import com.kh.mini_back.vo.MeetingVO;
+import com.kh.mini_back.vo.ScheduleVO;
 
 import java.sql.*;
 import java.sql.Date;
@@ -218,5 +226,52 @@ public class MeetingDAO {
 
         return ret > 0;
     }
+    public List<MeetingVO> mainsel(String searchType, String keyword) {
+        List<MeetingVO> list = new ArrayList<>();
+        String sql = null;
+        PreparedStatement pStmt = null;
+        ResultSet rs = null;
+        Connection conn = null;
 
+        try {
+            conn = Common.getConnection();
+            if (searchType.equals("제목")) {
+                sql = "SELECT * FROM MEETING_TB WHERE MEETING_TITLE LIKE ?";
+            } else if (searchType.equals("작성자")) {
+                sql = "SELECT * FROM MEETING_TB WHERE USER_ID = ?";
+            }
+            pStmt = conn.prepareStatement(sql);
+            if (searchType.equals("제목")) {
+                pStmt.setString(1, "%" + keyword + "%");
+            } else if (searchType.equals("작성자")) {
+                pStmt.setString(1, keyword);
+            }
+            rs = pStmt.executeQuery();
+            while(rs.next()) {
+                int no = rs.getInt("MEETING_NO");
+                String title = rs.getString("MEETING_TITLE");
+                String name = rs.getString("MEETING_NAME");
+                String location = rs.getString("MEETING_LOCATION");
+                Date duration1 = rs.getDate("MEETING_DURATION");
+                Date duration2 = rs.getDate("MEETING_DURATION2");
+                int personnel = rs.getInt("MEETING_PERSONNEL");
+                String id = rs.getString("USER_ID");
+                String category = rs.getString("MEETING_CATEGORY");
+                String detail = rs.getString("MEETING_DETAILS");
+                MeetingVO meetingVO = new MeetingVO(no,title,name,location,duration1,duration2,personnel,id,category,detail);
+                list.add(meetingVO);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pStmt != null) pStmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return list;
+    }
 }

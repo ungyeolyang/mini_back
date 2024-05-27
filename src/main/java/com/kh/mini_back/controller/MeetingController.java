@@ -1,5 +1,7 @@
 package com.kh.mini_back.controller;
 
+
+
 import com.kh.mini_back.dao.MeetingDAO;
 import com.kh.mini_back.vo.ChatVO;
 import com.kh.mini_back.vo.MeetingMemberVO;
@@ -72,5 +74,13 @@ public class MeetingController {
 
         Set <ScheduleVO> set = meetingDAO.writerList(mno, year, month);
         return ResponseEntity.ok(set);
+    }
+    @GetMapping("/mainsersel")
+    public ResponseEntity<List<MeetingVO>> mainsersel(@RequestParam String searchType, @RequestParam String keyword) {
+        MeetingDAO dao = new MeetingDAO();
+        List<MeetingVO> list = dao.mainsel(searchType, keyword);
+        System.out.println(searchType);
+        System.out.println(keyword);
+        return ResponseEntity.ok(list);
     }
 }
