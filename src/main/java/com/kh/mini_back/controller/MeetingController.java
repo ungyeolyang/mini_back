@@ -2,16 +2,13 @@ package com.kh.mini_back.controller;
 
 
 
+import com.kh.mini_back.dao.LetterDAO;
 import com.kh.mini_back.dao.MeetingDAO;
-import com.kh.mini_back.vo.ChatVO;
-import com.kh.mini_back.vo.MeetingMemberVO;
-import com.kh.mini_back.vo.MeetingVO;
-import com.kh.mini_back.vo.ScheduleVO;
+import com.kh.mini_back.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.IntBuffer;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +24,20 @@ public class MeetingController {
         MeetingDAO meetingDAO = new MeetingDAO();
         boolean isRecruit = meetingDAO.recruit(meetingVO);
         return ResponseEntity.ok(isRecruit);
+    }
+    //모집하기
+    @PostMapping("/master")
+    public ResponseEntity<Boolean> master(@RequestBody MeetingVO meetingVO) {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        boolean isMaster = meetingDAO.master(meetingVO);
+        return ResponseEntity.ok(isMaster);
+    }
+    //채팅 리스트
+    @GetMapping("/mymeetinglist")
+    public ResponseEntity<List<MeetingVO>> myMeetingList(@RequestParam String myId) {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        List<MeetingVO> list = meetingDAO.myMeetingList(myId);
+        return ResponseEntity.ok(list);
     }
     //채팅 리스트
     @GetMapping("/meetinglist")
@@ -82,5 +93,12 @@ public class MeetingController {
         System.out.println(searchType);
         System.out.println(keyword);
         return ResponseEntity.ok(list);
+    }
+    //일정쓰기
+    @PostMapping("/sendschedule")
+    public ResponseEntity<Boolean> sendSchedule(@RequestBody ScheduleVO scheduleVO) {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        Boolean isSend = meetingDAO.send(scheduleVO);
+        return ResponseEntity.ok(isSend);
     }
 }

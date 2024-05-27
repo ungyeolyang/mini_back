@@ -12,8 +12,10 @@ import com.kh.mini_back.vo.MeetingVO;
 import com.kh.mini_back.vo.ScheduleVO;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.sql.Date;
-import java.util.*;
+import java.util.List;
+import java.util.TreeSet;
 
 public class MeetingDAO {
     Connection conn = null;
@@ -50,6 +52,80 @@ public class MeetingDAO {
         Common.close(conn);
 
         return ret > 0;
+    }
+    // 모임생성자 모임리스트에 등록
+    public Boolean master(MeetingVO meetingVO) {
+        String query = null;
+        int ret = 0;
+        int no = 0;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = Common.getConnection();
+
+            query = "SELECT MEETING_NO FROM MEETING_TB WHERE USER_ID = ? AND MEETING_DETAILS = ?";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, meetingVO.getId());
+            pstmt.setString(2, meetingVO.getDetail());
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                no = rs.getInt("MEETING_NO");
+            }
+
+            Common.close(rs);
+            Common.close(pstmt);
+
+            query = "INSERT INTO MEETING_MEMBER_TB VALUES (?, ?, 'TRUE','TRUE')";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, no);
+            pstmt.setString(2, meetingVO.getId());
+            ret = pstmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            Common.close(rs);
+            Common.close(pstmt);
+            Common.close(conn);
+        }
+
+        return ret > 0;
+    }
+    public List<MeetingVO> myMeetingList(String myId) {
+        List<MeetingVO> list = new ArrayList<>();
+        try {
+            conn = Common.getConnection();
+
+            String query = "SELECT * FROM MEETING_TB WHERE MEETING_NO IN(SELECT MEETING_NO FROM MEETING_MEMBER_TB WHERE USER_ID = ?)";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, myId);
+            rs = pstmt.executeQuery();
+
+            while(rs.next()) {
+                int no = rs.getInt("MEETING_NO");
+                String title = rs.getString("MEETING_TITLE");
+                String name = rs.getString("MEETING_NAME");
+                String location = rs.getString("MEETING_LOCATION");
+                Date duration1 = rs.getDate("MEETING_DURATION");
+                Date duration2 = rs.getDate("MEETING_DURATION2");
+                int personnel = rs.getInt("MEETING_PERSONNEL");
+                String id = rs.getString("USER_ID");
+                String category = rs.getString("MEETING_CATEGORY");
+                String detail = rs.getString("MEETING_DETAILS");
+                MeetingVO meetingVO = new MeetingVO(no,title,name,location,duration1,duration2,personnel,id,category,detail);
+                list.add(meetingVO);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(rs);
+        Common.close(stmt);
+        Common.close(conn);
+        return list;
     }
 
     public List<MeetingVO> meetingList() {
@@ -97,11 +173,10 @@ public class MeetingDAO {
             rs = pstmt.executeQuery();
 
             while(rs.next()) {
-                int no = rs.getInt("MEETING_NO");
-                String id = rs.getString("USER_ID");
-                String nick= rs.getString("USER_NICK");
-                String profile= rs.getString("USER_PROFILE");
-                MeetingMemberVO meetingMemberVO = new MeetingMemberVO(no,id,nick,profile);
+                MeetingMemberVO meetingMemberVO = new MeetingMemberVO();
+                meetingMemberVO.setNo(rs.getInt("MEETING_NO"));
+                meetingMemberVO.setId(rs.getString("USER_ID"));
+
                 list.add(meetingMemberVO);
             }
 
@@ -131,10 +206,9 @@ public class MeetingDAO {
                 String title = rs.getString("SCHEDULE_TITLE");
                 String contents = rs.getString("SCHEDULE_CONTENTS");
                 String id= rs.getString("USER_ID");
-                String nick= rs.getString("USER_NICK");
                 Timestamp bdate= rs.getTimestamp("BOARD_DATE");
                 Date sdate= rs.getDate("SCHEDULE_DATE");
-                ScheduleVO scheduleVO = new ScheduleVO(mno,sno,title,contents,id,nick,bdate,sdate);
+                ScheduleVO scheduleVO = new ScheduleVO(mno,sno,title,contents,id,bdate,sdate);
                 list.add(scheduleVO);
             }
 
@@ -150,7 +224,7 @@ public class MeetingDAO {
         TreeSet<ScheduleVO> set = new TreeSet<>();
         try {
             conn = Common.getConnection();
-            String query = "SELECT USER_ID,USER_NICK,SCHEDULE_DATE " +
+            String query = "SELECT USER_ID,SCHEDULE_DATE " +
                     "FROM SCHEDULE_TB " +
                     "WHERE MEETING_NO = ? " +
                     "  AND EXTRACT(YEAR FROM SCHEDULE_DATE) = ? " +
@@ -166,7 +240,6 @@ public class MeetingDAO {
             while(rs.next()) {
                 ScheduleVO scheduleVO = new ScheduleVO();
                 scheduleVO.setId(rs.getString("USER_ID"));
-                scheduleVO.setNick(rs.getString("USER_NICK"));
                 scheduleVO.setSdate(rs.getDate("SCHEDULE_DATE"));
                 set.add(scheduleVO);
             }
@@ -224,6 +297,32 @@ public class MeetingDAO {
         Common.close(stmt);
         Common.close(conn);
 
+        return ret > 0;
+    }
+
+    public Boolean send(ScheduleVO scheduleVO) {
+        int ret = 0;
+        try {
+            conn = Common.getConnection();
+            String query = "INSERT INTO SCHEDULE_TB VALUES (?,SCHEDULE_SEQ.NEXTVAL,?,?,?,SYSDATE,?)";
+
+            pstmt = conn.prepareStatement(query);
+
+            pstmt.setInt(1, scheduleVO.getMno());
+            pstmt.setString(2, scheduleVO.getTitle());
+            pstmt.setString(3, scheduleVO.getContents());
+            pstmt.setString(4, scheduleVO.getId());
+            pstmt.setDate(5, scheduleVO.getSdate());
+
+            ret = pstmt.executeUpdate();
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        Common.close(stmt);
+        Common.close(conn);
         return ret > 0;
     }
     public List<MeetingVO> mainsel(String searchType, String keyword) {

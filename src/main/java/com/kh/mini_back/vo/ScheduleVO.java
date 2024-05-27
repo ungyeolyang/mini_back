@@ -18,7 +18,6 @@ public class ScheduleVO implements Comparable<ScheduleVO>{
     private String title;
     private String contents;
     private String id;
-    private String nick;
     private Timestamp bdate;
     private Date sdate;
 
