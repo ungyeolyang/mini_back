@@ -94,6 +94,31 @@ public class MeetingDAO {
 
         return ret > 0;
     }
+    // 모집하기
+    public boolean application(MeetingVO meetingVO) {
+        int ret = 0;
+        try {
+            conn = Common.getConnection();
+            String query = "INSERT INTO MEETING_MEMBER_TB( MEETING_NO,USER_ID, ACCEPT, DETAIL ) VALUES (?,?,'FALSE',?)";
+
+            pstmt = conn.prepareStatement(query);
+
+            pstmt.setInt(1, meetingVO.getNo());
+            pstmt.setString(2, meetingVO.getId());
+            pstmt.setString(3, meetingVO.getDetail());
+
+            ret = pstmt.executeUpdate();
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        Common.close(stmt);
+        Common.close(conn);
+
+        return ret > 0;
+    }
     public List<MeetingVO> myMeetingList(String myId) {
         List<MeetingVO> list = new ArrayList<>();
         try {

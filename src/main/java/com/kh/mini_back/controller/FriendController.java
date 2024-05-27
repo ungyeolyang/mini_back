@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -41,9 +42,9 @@ public class FriendController {
     }
     //친구 신청한 사람 list
     @GetMapping("/sendlist")
-    public ResponseEntity<List<FriendVO>> sendList(@RequestParam String id) {
+    public ResponseEntity<List<String>> sendList(@RequestParam String id) {
         FriendDAO friendDAO = new FriendDAO();
-        List<FriendVO> list = friendDAO.sendList(id);
+        List<String> list = friendDAO.sendList(id);
         return ResponseEntity.ok(list);
     }
 
@@ -63,9 +64,9 @@ public class FriendController {
 
     //내 친구  list
     @GetMapping("/friendlist")
-    public ResponseEntity<TreeSet<FriendVO>> friendList(@RequestParam String id) {
+    public ResponseEntity<Set<String>> friendList(@RequestParam String id) {
         FriendDAO friendDAO = new FriendDAO();
-        TreeSet<FriendVO> set = friendDAO.friendList(id);
+        Set<String> set = friendDAO.friendList(id);
         return ResponseEntity.ok(set);
     }
 }

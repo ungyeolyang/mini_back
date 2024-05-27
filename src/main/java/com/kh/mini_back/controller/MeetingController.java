@@ -25,11 +25,19 @@ public class MeetingController {
         boolean isRecruit = meetingDAO.recruit(meetingVO);
         return ResponseEntity.ok(isRecruit);
     }
-    //모집하기
+    //모집하고 나서
     @PostMapping("/master")
     public ResponseEntity<Boolean> master(@RequestBody MeetingVO meetingVO) {
         MeetingDAO meetingDAO = new MeetingDAO();
         boolean isMaster = meetingDAO.master(meetingVO);
+        return ResponseEntity.ok(isMaster);
+    }
+
+    //신청하기
+    @PostMapping("/application")
+    public ResponseEntity<Boolean> application(@RequestBody MeetingVO meetingVO) {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        boolean isMaster = meetingDAO.application(meetingVO);
         return ResponseEntity.ok(isMaster);
     }
     //채팅 리스트
