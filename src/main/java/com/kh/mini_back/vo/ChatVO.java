@@ -15,7 +15,6 @@ import java.sql.Timestamp;
 public class ChatVO {
     private int meetingNo;
     private String id;
-    private String nick;
     private String contents;
     private Timestamp date;
 }

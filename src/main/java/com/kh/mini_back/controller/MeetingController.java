@@ -2,6 +2,7 @@ package com.kh.mini_back.controller;
 
 
 
+import com.kh.mini_back.dao.FriendDAO;
 import com.kh.mini_back.dao.LetterDAO;
 import com.kh.mini_back.dao.MeetingDAO;
 import com.kh.mini_back.vo.*;
@@ -25,7 +26,7 @@ public class MeetingController {
         boolean isRecruit = meetingDAO.recruit(meetingVO);
         return ResponseEntity.ok(isRecruit);
     }
-    //모집하고 나서
+    //모집하고 나서 모임장 참여리스트에 넣기
     @PostMapping("/master")
     public ResponseEntity<Boolean> master(@RequestBody MeetingVO meetingVO) {
         MeetingDAO meetingDAO = new MeetingDAO();
@@ -40,11 +41,39 @@ public class MeetingController {
         boolean isMaster = meetingDAO.application(meetingVO);
         return ResponseEntity.ok(isMaster);
     }
-    //채팅 리스트
+    //모임 수락
+    @PostMapping("/acceptok")
+    public ResponseEntity<Boolean> acceptOk(@RequestBody MeetingMemberVO meetingMemberVO) {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        Boolean isUpdate = meetingDAO.acceptOk(meetingMemberVO);
+        return ResponseEntity.ok(isUpdate);
+    }
+    //멤버 삭제
+    @PostMapping("/delmember")
+    public ResponseEntity<Boolean> delMember(@RequestBody MeetingMemberVO meetingMemberVO) {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        Boolean isDelete = meetingDAO.delMember(meetingMemberVO);
+        return ResponseEntity.ok(isDelete);
+    }
+    //모임 신청 여부확인
+    @GetMapping("/conaccept")
+    public ResponseEntity<List<Integer>> conAccept(@RequestParam String id) {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        List<Integer> list = meetingDAO.conAccept(id);
+        return ResponseEntity.ok(list);
+    }
+    //내 모임 리스트
     @GetMapping("/mymeetinglist")
     public ResponseEntity<List<MeetingVO>> myMeetingList(@RequestParam String myId) {
         MeetingDAO meetingDAO = new MeetingDAO();
         List<MeetingVO> list = meetingDAO.myMeetingList(myId);
+        return ResponseEntity.ok(list);
+    }
+    //모임정보
+    @GetMapping("/meetinginfo")
+    public ResponseEntity<List<MeetingVO>> meetingInfo(@RequestParam int no) {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        List<MeetingVO> list = meetingDAO.meetingInfo(no);
         return ResponseEntity.ok(list);
     }
     //채팅 리스트
@@ -63,9 +92,9 @@ public class MeetingController {
     }
     //채팅 리스트
     @GetMapping("/chatlist")
-    public ResponseEntity<List<ChatVO>> chatList(@RequestParam int meetingNo) {
+    public ResponseEntity<List<ChatVO>> chatList(@RequestParam int no) {
         MeetingDAO meetingDAO = new MeetingDAO();
-        List<ChatVO> list = meetingDAO.chatList(meetingNo);
+        List<ChatVO> list = meetingDAO.chatList(no);
         return ResponseEntity.ok(list);
     }
 
@@ -93,6 +122,19 @@ public class MeetingController {
 
         Set <ScheduleVO> set = meetingDAO.writerList(mno, year, month);
         return ResponseEntity.ok(set);
+    }
+    @GetMapping("/delschedule")
+    public ResponseEntity<Boolean> delFriend(@RequestParam int sno) {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        Boolean isDelete = meetingDAO.delSchedule(sno);
+        return ResponseEntity.ok(isDelete);
+    }
+     //모임 신청자 list
+    @GetMapping("/acceptlist")
+    public ResponseEntity<List<MeetingMemberVO>> acceptList(@RequestParam String id) {
+        MeetingDAO meetingDAO = new MeetingDAO();
+        List<MeetingMemberVO>  list = meetingDAO.acceptList(id);
+        return ResponseEntity.ok(list);
     }
     @GetMapping("/mainsersel")
     public ResponseEntity<List<MeetingVO>> mainsersel(@RequestParam String searchType, @RequestParam String keyword) {

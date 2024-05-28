@@ -12,6 +12,7 @@ import lombok.Setter;
 public class MeetingMemberVO {
     private int no;
     private String id;
-    private String nick;
-    private String profile;
+    private String master;
+    private String accept;
+    private String detail;
 }

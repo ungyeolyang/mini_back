@@ -6,10 +6,7 @@ package com.kh.mini_back.dao;
 
 
 import com.kh.mini_back.utils.Common;
-import com.kh.mini_back.vo.ChatVO;
-import com.kh.mini_back.vo.MeetingMemberVO;
-import com.kh.mini_back.vo.MeetingVO;
-import com.kh.mini_back.vo.ScheduleVO;
+import com.kh.mini_back.vo.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -94,7 +91,7 @@ public class MeetingDAO {
 
         return ret > 0;
     }
-    // 모집하기
+    // 신청하기
     public boolean application(MeetingVO meetingVO) {
         int ret = 0;
         try {
@@ -119,12 +116,111 @@ public class MeetingDAO {
 
         return ret > 0;
     }
+    //모임수락
+    public Boolean acceptOk(MeetingMemberVO meetingMemberVO) {
+        int ret = 0;
+        try {
+            conn = Common.getConnection();
+            String query = "UPDATE MEETING_MEMBER_TB SET ACCEPT = 'TRUE' WHERE MEETING_NO = ? AND USER_ID = ?";
+
+            pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, meetingMemberVO.getNo());
+            pstmt.setString(2, meetingMemberVO.getId());
+            ret = pstmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            Common.close(pstmt);
+            Common.close(conn);
+        }
+        return ret>0;
+    }
+    //친구삭제
+    public Boolean delMember(MeetingMemberVO meetingMemberVO) {
+        int ret = 0;
+        try {
+            conn = Common.getConnection();
+            String query = "DELETE FROM MEETING_MEMBER_TB WHERE WHERE MEETING_NO = ? AND USER_ID = ?";
+            pstmt = conn.prepareStatement(query);
+
+            pstmt.setInt(1, meetingMemberVO.getNo());
+            pstmt.setString(2, meetingMemberVO.getId());
+            ret = pstmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            Common.close(pstmt);
+            Common.close(conn);
+        }
+        return ret>0;
+    }
+    // 모임 신청중인지 확인
+    public List<Integer> conAccept(String id) {
+        List<Integer> list = new ArrayList<>();
+        try {
+            conn = Common.getConnection();
+            String query = "SELECT MEETING_NO FROM MEETING_MEMBER_TB WHERE USER_ID = ?";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, id);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()){
+             int num = rs.getInt("MEETING_NO");
+             list.add(num);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            Common.close(pstmt);
+            Common.close(conn);
+        }
+        return list;
+    }
+    //모임정보
+    public List<MeetingVO> meetingInfo(int mno) {
+        List<MeetingVO> list = new ArrayList<>();
+        try {
+            conn = Common.getConnection();
+            String query = "SELECT * FROM MEETING_TB WHERE MEETING_NO = ?";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, mno);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()){
+                int no = rs.getInt("MEETING_NO");
+                String title = rs.getString("MEETING_TITLE");
+                String name = rs.getString("MEETING_NAME");
+                String location = rs.getString("MEETING_LOCATION");
+                Date duration1 = rs.getDate("MEETING_DURATION");
+                Date duration2 = rs.getDate("MEETING_DURATION2");
+                int personnel = rs.getInt("MEETING_PERSONNEL");
+                String id = rs.getString("USER_ID");
+                String category = rs.getString("MEETING_CATEGORY");
+                String detail = rs.getString("MEETING_DETAILS");
+                MeetingVO meetingVO = new MeetingVO(no,title,name,location,duration1,duration2,personnel,id,category,detail);
+                list.add(meetingVO);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            Common.close(rs);
+            Common.close(pstmt);
+            Common.close(conn);
+        }
+        return list;
+    }
     public List<MeetingVO> myMeetingList(String myId) {
         List<MeetingVO> list = new ArrayList<>();
         try {
             conn = Common.getConnection();
 
-            String query = "SELECT * FROM MEETING_TB WHERE MEETING_NO IN(SELECT MEETING_NO FROM MEETING_MEMBER_TB WHERE USER_ID = ?)";
+            String query = "SELECT * FROM MEETING_TB WHERE MEETING_NO IN(SELECT MEETING_NO FROM MEETING_MEMBER_TB WHERE USER_ID = ? AND ACCEPT = 'TRUE')";
             pstmt = conn.prepareStatement(query);
             pstmt.setString(1, myId);
             rs = pstmt.executeQuery();
@@ -185,13 +281,45 @@ public class MeetingDAO {
         Common.close(conn);
         return list;
     }
+    // 모임 신청자 list
+    public List<MeetingMemberVO> acceptList(String id) {
+        List<MeetingMemberVO> list = new ArrayList<>();
+        try {
+            conn = Common.getConnection();
+
+            String query = "SELECT * FROM MEETING_MEMBER_TB WHERE MEETING_NO in (SELECT MEETING_NO  FROM MEETING_TB WHERE USER_ID  = ?) AND ACCEPT = 'FALSE'";
+            pstmt = conn.prepareStatement(query);
+
+            pstmt.setString(1, id);
+            rs = pstmt.executeQuery();
+
+            while(rs.next()) {
+                int no = rs.getInt("MEETING_NO");
+                String userId = rs.getString("USER_ID");
+                String master = rs.getString("MASTER");
+                String accept = rs.getString("ACCEPT");
+                String detail = rs.getString("DETAIL");
+                MeetingMemberVO meetingMemberVO = new MeetingMemberVO(no,userId,master,accept,detail);
+                list.add(meetingMemberVO);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+     finally {
+        Common.close(rs);
+        Common.close(pstmt);
+        Common.close(conn);
+    }
+        return list;
+    }
     //참여자 목록
     public List<MeetingMemberVO> memberList(int meetingNo) {
         List<MeetingMemberVO> list = new ArrayList<>();
         try {
             conn = Common.getConnection();
 
-            String query = "SELECT * FROM MEETING_MEMBER_TB WHERE MEETING_NO = ?";
+            String query = "SELECT * FROM MEETING_MEMBER_TB WHERE MEETING_NO = ? AND ACCEPT = 'TRUE'";
             pstmt = conn.prepareStatement(query);
 
             pstmt.setInt(1, meetingNo);
@@ -277,21 +405,20 @@ public class MeetingDAO {
         Common.close(conn);
         return set;
     }
-    public List<ChatVO> chatList(int meetingNo) {
+    public List<ChatVO> chatList(int no) {
         List<ChatVO> list = new ArrayList<>();
         try {
             conn = Common.getConnection();
             stmt = conn.createStatement();
 
-            String query = "SELECT * FROM CHAT_TB WHERE MEETING_NO = '" + meetingNo + "'";
+            String query = "SELECT * FROM CHAT_TB WHERE MEETING_NO = '" + no + "'";
             rs = stmt.executeQuery(query);
 
             while(rs.next()) {
                 ChatVO chatVO = new ChatVO();
                 chatVO.setMeetingNo(rs.getInt("MEETING_NO"));
-                chatVO.setId(rs.getString("USER_ID")); ;
-                chatVO.setNick(rs.getString("USER_NICK"));
-                chatVO.setContents(rs.getString("CHAT_CONTENTS"));
+                chatVO.setId(rs.getString("USER_ID"));
+                chatVO.setContents(rs.getString("CHAT_DE"));
                 chatVO.setDate(rs.getTimestamp("CHAT_DATE"));
                 list.add(chatVO);
             }
@@ -309,22 +436,40 @@ public class MeetingDAO {
         int ret = 0;
         try {
             conn = Common.getConnection();
-            stmt = conn.createStatement();
-
-            String query = "INSERT INTO CHAT_TB VALUES (1,'" + chatVO.getId() + "','" +chatVO.getNick() + "','" + chatVO.getContents() + "',SYSDATE)";
-
-            ret = stmt.executeUpdate(query);
+            String query = "INSERT INTO CHAT_TB VALUES (?,?,?,SYSDATE)";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, chatVO.getMeetingNo());
+            pstmt.setString(2, chatVO.getId());
+            pstmt.setString(3, chatVO.getContents());
+            ret = pstmt.executeUpdate();
         }
         catch(Exception e){
             e.printStackTrace();
         }
 
-        Common.close(stmt);
+        Common.close(pstmt);
         Common.close(conn);
 
         return ret > 0;
     }
+    public Boolean delSchedule(int sno) {
+        int ret = 0;
+        try {
+            conn = Common.getConnection();
+            String query = "DELETE FROM SCHEDULE_TB WHERE SCHEDULE_NO = ?";
+            pstmt = conn.prepareStatement(query);
 
+            pstmt.setInt(1, sno);
+            ret = pstmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Common.close(rs);
+        Common.close(stmt);
+        Common.close(conn);
+        return ret>0;
+    }
     public Boolean send(ScheduleVO scheduleVO) {
         int ret = 0;
         try {

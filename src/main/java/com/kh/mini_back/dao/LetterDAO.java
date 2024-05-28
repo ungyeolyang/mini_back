@@ -1,6 +1,7 @@
 package com.kh.mini_back.dao;
 
 import com.kh.mini_back.utils.Common;
+import com.kh.mini_back.vo.FriendVO;
 import com.kh.mini_back.vo.LetterVO;
 import com.kh.mini_back.vo.UserInfoVO;
 
@@ -89,6 +90,27 @@ public class LetterDAO {
         Common.close(conn);
         return ret > 0;
     }
+    //친구삭제
+    public Boolean delLetter(int sno) {
+        int ret = 0;
+        try {
+            conn = Common.getConnection();
+            String query = "DELETE FROM LETTER_TB WHERE LETTER_NO = ?";
+            pstmt = conn.prepareStatement(query);
+
+            pstmt.setInt(1, sno);
+            ret = pstmt.executeUpdate();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            Common.close(pstmt);
+            Common.close(conn);
+        }
+        return ret>0;
+    }
 
     public List<LetterVO> getLetter(String id, String category) {
         List<LetterVO> list = new ArrayList<>();
@@ -147,23 +169,4 @@ public class LetterDAO {
         return ret>0;
     }
 
-    public Boolean deleteLetter(String no) {
-        int ret = 0;
-        try {
-            conn = Common.getConnection();
-            String query = "UPDATE LETTER_TB SET LETTER_VIEW = 'TRUE' WHERE LETTER_NO = ?";
-
-            pstmt = conn.prepareStatement(query);
-            pstmt.setString(1, no);
-            ret = pstmt.executeUpdate();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        } finally {
-            Common.close(pstmt);
-            Common.close(conn);
-        }
-        return ret>0;
-    }
 }

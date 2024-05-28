@@ -35,6 +35,12 @@ public class LetterController {
         Boolean isSend = letterDAO.send(letterVo);
         return ResponseEntity.ok(isSend);
     }
+    @GetMapping("/delletter")
+    public ResponseEntity<Boolean> sendLetter(@RequestParam int sno) {
+        LetterDAO letterDAO = new LetterDAO();
+        Boolean isDel = letterDAO.delLetter(sno);
+        return ResponseEntity.ok(isDel);
+    }
     @PostMapping("/letterList")
     public ResponseEntity<List<LetterVO>> getLetterList(@RequestBody Map<String,String> data) {
         LetterDAO letterDAO = new LetterDAO();
