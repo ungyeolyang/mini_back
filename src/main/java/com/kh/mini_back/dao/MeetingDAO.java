@@ -75,7 +75,7 @@ public class MeetingDAO {
             Common.close(rs);
             Common.close(pstmt);
 
-            query = "INSERT INTO MEETING_MEMBER_TB VALUES (?, ?, 'TRUE','TRUE')";
+            query = "INSERT INTO MEETING_MEMBER_TB(MEETING_NO,USER_ID,MASTER,ACCEPT) VALUES (?, ?, 'TRUE','TRUE')";
             pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, no);
             pstmt.setString(2, meetingVO.getId());
