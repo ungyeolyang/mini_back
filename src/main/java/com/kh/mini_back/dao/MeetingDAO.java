@@ -142,7 +142,7 @@ public class MeetingDAO {
         int ret = 0;
         try {
             conn = Common.getConnection();
-            String query = "DELETE FROM MEETING_MEMBER_TB WHERE WHERE MEETING_NO = ? AND USER_ID = ?";
+            String query = "DELETE FROM MEETING_MEMBER_TB WHERE MEETING_NO = ? AND USER_ID = ?";
             pstmt = conn.prepareStatement(query);
 
             pstmt.setInt(1, meetingMemberVO.getNo());
