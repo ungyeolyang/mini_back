@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-@CrossOrigin(origins = "http://192.168.10.13:3000")
-//@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://192.168.10.13:3000")
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/dooin")
 @Slf4j

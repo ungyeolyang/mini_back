@@ -491,7 +491,7 @@ public class MeetingDAO {
             e.printStackTrace();
         }
 
-        Common.close(stmt);
+        Common.close(pstmt);
         Common.close(conn);
         return ret > 0;
     }
